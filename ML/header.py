@@ -17,7 +17,7 @@ header_average = [
     'Mean Degree', 'Average shortest path length', 'Average clustering coefficient',
     'Average neighbor degree','Average node betweenness centrality', 'Edge betweenness centrality']
 
-header_abundance = [n for n in header if n.find('abundance') > -1] # 'CO abundance', 'CH4 abundance', 'NH3 abundance', 'H2O abundance']
+header_abundance = [n for n in header if n.find('abundance') > -1] # 'CO abundance', 'CH4 abundance', 'NH3 abundance', 'H2O abundance'
 
 header_CO = [n for n in header if n.find('CO') > -1]
 header_CO_without_abundance = list(header_CO)

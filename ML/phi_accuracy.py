@@ -85,7 +85,6 @@ def XGB_accuracy(X, Y):
 #%%
 # Delta G distribution + Average Topology VS Kzz
 
-
 dict_accuracy = dict()
 for spread in ["50", "100", "250", "500", "1000"]: #spread
 
@@ -137,7 +136,6 @@ plt.show()
 #%%
 # Delta G distribution VS Kzz
 
-
 dict_accuracy = dict()
 for spread in ["50", "100", "250", "500", "1000"]: #spread
 
@@ -152,13 +150,10 @@ for spread in ["50", "100", "250", "500", "1000"]: #spread
         data3 = pd.read_csv(data_dir + 'kzz3_temp%d_spread%s.csv'%(t, spread))
 
         frames = [data0, data1, data2, data3]
-        #frames = [data2, data3]
         allData = pd.concat(frames, ignore_index=True)
         allData = allData[['Delta G distribution', 'kzz']]
 
-
-        """ Split into dependent and independent variables
-        """
+        # Split into dependent and independent variables
         X = allData.iloc[:, :-1]
         Y = allData.iloc[:, -1].values
 

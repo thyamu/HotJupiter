@@ -10,7 +10,6 @@ import seaborn as sns
 # Phi values vs kzz over different temperature
 
 # Phi values VS Kzz
-
 allData = pd.DataFrame()
 for spread in ["50", "100", "250", "500", "1000"]: # spread
 
@@ -29,8 +28,7 @@ for spread in ["50", "100", "250", "500", "1000"]: # spread
 
         allData = pd.concat([allData, data0, data1, data2, data3], ignore_index=True)
 
-        """ Split into dependent and independent variables
-        """
+        # Split into dependent and independent variables
         X = allData.iloc[:, :-1].values
         min_max_scaler = preprocessing.MinMaxScaler()
         X_train_minmax = min_max_scaler.fit_transform(X)
@@ -38,7 +36,6 @@ for spread in ["50", "100", "250", "500", "1000"]: # spread
         Y = allData.iloc[:, -1].values
 
     #plots for kzz vs phi
-
     plot_dir =  "/Users/hkim78/work/2020-hotJupiter/plot/atmosphere-uncertainty/phi_distribution/"
     if not os.path.exists(plot_dir):
         os.mkdir(plot_dir)

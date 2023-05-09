@@ -1,6 +1,4 @@
-
 ## ML prediction efficacy of G, abundance, topology for disequilibrium
-
 import os
 import numpy as np
 import pandas as pd
@@ -11,24 +9,16 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 import time
 
-
-
 def XGB_accuracy(X, Y):
-    """ Split for training and testing
-    """
+    # Split for training and testing
     x_train, x_test, y_train, y_test = ms.train_test_split(X, Y, test_size=0.2, random_state=0)
     eval_set = [(x_train, y_train), (x_test, y_test)]
 
-    """ Fit the decision tree
-    """
-    # classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=1000, max_depth=2, n_estimators=10000)
+    # Fit the decision tree
     classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=10, max_depth= 5, n_estimators=1000) # current results in Hot Jupiter
-    # classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=10, max_depth=3, n_estimators=500) # current test
-    # max_depth = 5 in the current draft
     classifier = classifier.fit(x_train, y_train, early_stopping_rounds=100, eval_set=eval_set,
                                 eval_metric=["merror", "mlogloss"], verbose=False)
-    """ Predictions
-    """
+    # Predictions
     y_pred = classifier.predict(x_test)
     return metrics.accuracy_score(y_test, y_pred)
 
@@ -40,7 +30,6 @@ def highest_predictor(data, rank):
     :param rank:
     :return:
     '''
-
 
 ### headers for different groups of features
 
@@ -59,7 +48,7 @@ header_topology = ["Mean Degree", "Average clustering coefficient",
                 "Average shortest path length", "Average neighbor degree"]
 
 
-# compute accuracy of predicting Kzz using different combination of G, topoAve, and abundance.
+### compute accuracy of predicting Kzz using different combination of G, topoAve, and abundance.
 dict_var = {
             #individual group
             'g':['Delta G distribution'],  'topo': header_topology, 'ab': header_abundance,
@@ -113,17 +102,16 @@ individual_topology = simple_topo + complex_topo + betweenness
 individual_features = ['g'] + individual_abundance + individual_topology
 
 
-### dir for the results of ML for individual variables
+# dir for the results of ML for individual variables
 ml_dir = "/Users/hkim78/work/HotJupiter/ML/results/accuracy/2021/"
 
-### nth highest accuracy
+# nth highest accuracy
 selected = 3
 
 best_features = dict()
 
 for spread in ["50", "250", "500"]:
-
-    ### to transfer the results of ML for individual variables (features) as function of temperature to a dict {temp: {feature: predicting accuracy}}
+    # to transfer the results of ML for individual variables (features) as function of temperature to a dict {temp: {feature: predicting accuracy}}
     list_temp = np.arange(400, 2100, 100)
 
     dict_temp_feature = dict()
@@ -140,7 +128,7 @@ for spread in ["50", "250", "500"]:
 
     best_features[spread] = dict()
 
-    ### to identify n (=selected) features with highest value
+    # to identify n (=selected) features with highest value
     for temp_index in range(len(list_temp)):
         sorted_list = sorted(dict_temp_feature[temp_index].values())
         selected_value = sorted_list[-selected]
@@ -152,7 +140,6 @@ for spread in ["50", "250", "500"]:
             best_features[spread][list_temp[temp_index]] = best_features[spread][list_temp[temp_index]] + dict_var[x]
 
 
-
 dict_accuracy = dict()
 
 for spread in ["50", "250", "500"]:  # spread
@@ -162,7 +149,6 @@ for spread in ["50", "250", "500"]:  # spread
     for t in np.arange(400, 2100, 100):
         ### ML with the set of highest predicting variables
         st = time.time()
-        print('starting', best_features[spread][t])
 
         data0 = pd.read_csv(data_dir + 'kzz0-aveT%dK.csv'%(t))
         data1 = pd.read_csv(data_dir + 'kzz1-aveT%dK.csv'%(t))
@@ -175,8 +161,7 @@ for spread in ["50", "250", "500"]:  # spread
 
         allData = allData[features]
 
-        """ Split into dependent and independent variables
-        """
+        # Split into dependent and independent variables
         X = allData.iloc[:, :-1]
         Y = allData.iloc[:, -1].values
 
@@ -184,18 +169,11 @@ for spread in ["50", "250", "500"]:  # spread
         dict_accuracy[spread].append(a)
 
         et = time.time()
-
-        print(spread, t)
         print(et - st)
-
-
+        
 
 result_dir = "/Users/hkim78/work/HotJupiter/ML/results/accuracy/2021/"
 output_path = result_dir + "accuracy_bestPredictors.json"
-
-# result = dict()
-# result["top_predictors"] = best_features
-# result["accuracy"] = dict_accuracy
 
 with open(output_path, 'w') as outfile:
     json.dump(dict_accuracy, outfile)

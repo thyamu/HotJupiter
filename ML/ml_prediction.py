@@ -14,21 +14,15 @@ import time
 
 
 def XGB_accuracy(X, Y):
-    """ Split for training and testing
-    """
+    # Split for training and testing
     x_train, x_test, y_train, y_test = ms.train_test_split(X, Y, test_size=0.2, random_state=0)
     eval_set = [(x_train, y_train), (x_test, y_test)]
-
-    """ Fit the decision tree
-    """
-    # classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=1000, max_depth=2, n_estimators=10000)
-    classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=10, max_depth= 5, n_estimators=1000) # current results in Hot Jupiter
-    # classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=10, max_depth=3, n_estimators=500) # current test
-    # max_depth = 5 in the current draft
+    
+    # Fit the decision tree
+    classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=10, max_depth= 5, n_estimators=1000)
     classifier = classifier.fit(x_train, y_train, early_stopping_rounds=100, eval_set=eval_set,
                                 eval_metric=["merror", "mlogloss"], verbose=False)
-    """ Predictions
-    """
+    # Predictions
     y_pred = classifier.predict(x_test)
     return metrics.accuracy_score(y_test, y_pred)
 
@@ -43,14 +37,14 @@ header = ["Temperature", "Metallicity Altitude",
           "Delta G distribution",	"Phi distribution"
           "Mean of Temperature Distribution", "Kzz", "Spread of Uncertainty"]
 
-header_abundance = ["CO abundance", "CH4 abundance", "NH3 abundance",	"H2O abundance"]
+header_abundance = ["CO abundance", "CH4 abundance", "NH3 abundance","H2O abundance"]
 
 header_topology = ["Mean Degree", "Average clustering coefficient",
                 "Average node betweenness centrality", "Edge betweenness centrality",
                 "Average shortest path length", "Average neighbor degree"]
 
 
-# compute accuracy of predicting Kzz using different combination of G, topoAve, and abundance.
+### compute accuracy of predicting Kzz using different combination of G, topoAve, and abundance.
 dict_var = {
             #individual group
             'g':['Delta G distribution'],  'topo': header_topology, 'ab': header_abundance,
@@ -103,7 +97,7 @@ g_individual_abundance = ['g_CO', 'g_CH4','g_NH3','g_H2O']
 individual_topology = simple_topo + complex_topo + betweenness
 individual_features = ['g'] + individual_abundance + individual_topology
 
-for var in ['top_predictor']: #dict_var.keys():
+for var in dict_var.keys():
     st = time.time()
     print('starting', var)
     var_name = dict_var[var]
@@ -125,8 +119,7 @@ for var in ['top_predictor']: #dict_var.keys():
 
             allData = allData[features]
 
-            """ Split into dependent and independent variables
-            """
+            # Split into dependent and independent variables
             X = allData.iloc[:, :-1]
             Y = allData.iloc[:, -1].values
 

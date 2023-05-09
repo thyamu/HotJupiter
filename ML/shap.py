@@ -218,8 +218,7 @@ for var in list(dict_var.keys()): #dict_var.keys():
 
             allData = allData[features]
 
-            """ Split into dependent and independent variables
-            """
+            # Split into dependent and independent variables
             X = allData.iloc[:, :-1]
             Y = allData.iloc[:, -1].values
 
@@ -230,7 +229,6 @@ for var in list(dict_var.keys()): #dict_var.keys():
             ax.set_title("%dK_spread%s"%(t, spread))
 
             labels_original = [item.get_text() for item in ax.get_yticklabels()]
-            #print(labels_original)
             len_labels = len(labels_original)
             labels_new = list()
             for i in range(len_labels):

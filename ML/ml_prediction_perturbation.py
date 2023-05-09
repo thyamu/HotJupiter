@@ -12,29 +12,22 @@ import matplotlib.pyplot as plt
 import time
 
 
-
 def XGB_accuracy(X, Y):
-    """ Split for training and testing
-    """
+    # Split for training and testing
     x_train, x_test, y_train, y_test = ms.train_test_split(X, Y, test_size=0.2, random_state=0)
     eval_set = [(x_train, y_train), (x_test, y_test)]
 
-    """ Fit the decision tree
-    """
-    # classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=1000, max_depth=2, n_estimators=10000)
+    # Fit the decision tree
     classifier = xgb.XGBClassifier(objective="multi:softprob", min_child_wight=10, max_depth= 5, n_estimators=1000)
-    # max_depth = 5 in the current draft
     classifier = classifier.fit(x_train, y_train, early_stopping_rounds=100, eval_set=eval_set,
                                 eval_metric=["merror", "mlogloss"], verbose=False)
-    """ Predictions
-    """
+    # Predictions
     y_pred = classifier.predict(x_test)
     return metrics.accuracy_score(y_test, y_pred)
 
 
 def remove_var(df, list_var):
     '''
-
     :param df: pandas dataframe
     :param list_var: list of column
     :return: df after removing columns in list_var, the list of variables
@@ -59,7 +52,7 @@ header_topology = ["Mean Degree", "Average clustering coefficient",
                 "Average shortest path length", "Average neighbor degree"]
 
 
-# compute accuracy of predicting Kzz using different combination of G, topoAve, and abundance.
+### compute accuracy of predicting Kzz using different combination of G, topoAve, and abundance.
 dict_var = {
             #individual group
             'g':['Delta G distribution'],  'topo': header_topology, 'ab': header_abundance,
@@ -94,7 +87,7 @@ dict_var = {
                                     + ["Average node betweenness centrality"] + ["Edge betweenness centrality"]
 }
 
-#header group
+###header group
 individual_group = ['g', 'topo', 'ab']
 group_combination = ['topo_ab', 'g_topo', 'g_ab']
 three_group = ['g_topo_ab']
@@ -111,13 +104,11 @@ st = time.time()
 
 data_dir = "/Users/hkim78/work/HotJupiter/data/perturbation/parsed_data/2021/"
 
-list_temp = np.arange(400, 2100, 100) #==> due to lack of files
-# list_temp = [400,  500,  600,  700,  800,  900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000]
+list_temp = np.arange(400, 2100, 100)
 
 for spread in ["500"]:
     for var in ["topo"]: # dict_var.keys(): #three_group: #dict_var.keys():
         st = time.time()
-        print('starting', var)
         var_name = dict_var[var]
 
         dict_accuracy = dict()
@@ -125,7 +116,7 @@ for spread in ["500"]:
 
             dict_accuracy[removed_species] = list()
 
-            for t in list_temp: #np.arange(400, 2100, 100): ==>
+            for t in list_temp:
                 data0 = pd.read_csv(data_dir + '%s_removed/%s_removed_%sk_spread_kzz0-aveT%dK.csv' % (removed_species, removed_species, spread, t))
                 data1 = pd.read_csv(data_dir + '%s_removed/%s_removed_%sk_spread_kzz1-aveT%dK.csv' % (removed_species, removed_species, spread, t))
                 data2 = pd.read_csv(data_dir + '%s_removed/%s_removed_%sk_spread_kzz2-aveT%dK.csv' % (removed_species, removed_species, spread, t))
@@ -137,8 +128,7 @@ for spread in ["500"]:
 
                 allData = allData[features]
 
-                """ Split into dependent and independent variables
-                """
+                # Split into dependent and independent variables
                 X = allData.iloc[:, :-1]
                 Y = allData.iloc[:, -1].values
 
@@ -152,7 +142,6 @@ for spread in ["500"]:
             json.dump(dict_accuracy, outfile)
 
         et = time.time()
-
         print(var, (et - st))
 
 
